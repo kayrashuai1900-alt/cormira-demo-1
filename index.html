@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>扶光心舍 / CORMIRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@200;300;400;500&family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#F6F6F8}
+  html{scroll-behavior:smooth}
+  ::selection{background:rgba(108,92,231,.20);color:#1A1A2E}
+  a{text-decoration:none;color:inherit}
+  body{font-family:'Inter','Noto Sans SC',sans-serif;color:#4A4A5A;width:100%;overflow-x:hidden;position:relative}
+
+  @keyframes heroUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+  .nav-a{transition:color .35s cubic-bezier(.2,.6,.2,1)}
+  .nav-a:hover{color:#1A1A2E}
+  .card{transition:transform .5s cubic-bezier(.2,.6,.2,1),box-shadow .5s,border-color .5s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 20px 46px rgba(108,92,231,.13);border-color:#DAD8EE}
+  .btn-p{transition:transform .4s cubic-bezier(.2,.6,.2,1),box-shadow .4s}
+  .btn-p:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(108,92,231,.34)}
+  .btn-s{transition:transform .4s cubic-bezier(.2,.6,.2,1),border-color .4s}
+  .btn-s:hover{transform:translateY(-2px);border-color:rgba(108,92,231,.6)}
+  .mlink{transition:gap .3s}
+  .mlink:hover{gap:16px}
+  .mail{transition:transform .5s cubic-bezier(.2,.6,.2,1),box-shadow .5s,border-color .5s,background .5s}
+  .mail:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(108,92,231,.22);border-color:rgba(108,92,231,.85);background:#FBFAFF}
+  .langbtn{cursor:pointer;transition:background .3s,color .3s}
+  .lang-active{background:#1A1A2E;color:#fff}
+
+  .toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#1A1A2E;color:#fff;font:400 13px/1 'Noto Sans SC',sans-serif;letter-spacing:.04em;padding:14px 26px;border-radius:999px;z-index:999;transition:opacity .4s,transform .4s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media(max-width:900px){
+    .grid3{grid-template-columns:1fr!important}
+    .grid2{grid-template-columns:1fr!important}
+    .grid4{grid-template-columns:repeat(2,1fr)!important}
+    .twocol{grid-template-columns:1fr!important;gap:40px!important}
+    .nav-wrap{display:none!important}
+    .pad{padding-left:24px!important;padding-right:24px!important}
+    .roadflex{flex-direction:column!important}
+    .roadarrow{transform:rotate(90deg)!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== BLOB FIELD (gooey metaballs) ===================== -->
+<div id="fluid" style="position:fixed;inset:-4%;width:108%;height:108%;z-index:0;pointer-events:none;overflow:hidden;will-change:transform;transition:transform 1.4s cubic-bezier(.2,.6,.2,1)">
+  <!-- faint ambient warmth so corners aren't dead -->
+  <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 72% 30%,rgba(108,92,231,.10),transparent 60%),radial-gradient(100% 80% at 20% 88%,rgba(150,162,196,.10),transparent 60%)"></div>
+
+  <!-- neural field -->
+  <canvas id="neural" style="position:absolute;inset:0;width:100%;height:100%;opacity:.9"></canvas>
+</div>
+
+<!-- grain -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:300;opacity:.03;mix-blend-mode:multiply;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;)"></div>
+
+<!-- ===================== HEADER ===================== -->
+<header style="position:sticky;top:0;z-index:60;backdrop-filter:blur(18px);background:rgba(246,246,248,.74);border-bottom:1px solid rgba(26,26,46,.07)">
+  <div class="pad" style="max-width:1200px;margin:0 auto;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="#top" style="display:flex;align-items:baseline;gap:11px;white-space:nowrap">
+      <span style="font:600 19px/1 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.04em">扶光心舍</span>
+      <span id="brand-en" style="display:none;align-items:baseline;gap:11px"><span style="font:300 16px/1 'Inter',sans-serif;color:#B4B4C2">/</span><span style="font:600 15px/1 'Inter',sans-serif;color:#1A1A2E;letter-spacing:.22em">CORMIRA</span></span>
+    </a>
+    <nav class="nav-wrap" style="display:flex;align-items:center;gap:34px;font:400 13.5px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.06em">
+      <a class="nav-a" href="#capabilities">核心能力</a>
+      <a class="nav-a" href="#platform">平台</a>
+      <a class="nav-a" href="#mental">心理健康</a>
+      <a class="nav-a" href="#research">研究</a>
+      <a class="nav-a" href="#tech">技术路径</a>
+      <a class="nav-a" href="#team">团队</a>
+      <a class="nav-a" href="#contact">联系</a>
+    </nav>
+    <div style="display:flex;align-items:center;border:1px solid rgba(26,26,46,.16);border-radius:999px;overflow:hidden;font:500 12px/1 'Inter',sans-serif;letter-spacing:.1em">
+      <span class="langbtn lang-active" onclick="setLang('zh')" style="padding:9px 15px">中</span>
+      <span class="langbtn" onclick="setLang('en')" style="padding:9px 15px;color:#6B6B80">EN</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section id="top" style="position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center">
+  <div class="pad" style="position:relative;max-width:1000px;padding:0 40px">
+    <div style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.34em;color:#6C5CE7;margin-bottom:46px">AI 行为科学</div>
+    <h1 style="margin:0;font:700 clamp(58px,8.8vw,124px)/1.07 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">
+      <span style="display:inline-block;animation:heroUp .95s cubic-bezier(.2,.6,.2,1) .12s both">让</span><span style="display:inline-block;animation:heroUp .95s cubic-bezier(.2,.6,.2,1) .26s both;color:#6C5CE7;margin:0 .1em;font-family:'Inter',serif">AI</span><span style="display:inline-block;animation:heroUp .95s cubic-bezier(.2,.6,.2,1) .4s both">照见</span><span style="display:inline-block;animation:heroUp .95s cubic-bezier(.2,.6,.2,1) .54s both">人心</span>
+    </h1>
+    <p style="margin:46px auto 0;max-width:640px;font:300 18px/1.96 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em">在基础大模型之上，构建因果推断、可解释性与行为科学的结构化模型。把黑箱预测变成对人的行为可安全、可理解、可执行的洞察。</p>
+    <div style="display:flex;gap:18px;margin-top:54px;flex-wrap:wrap;justify-content:center">
+      <a href="#contact" class="btn-p" style="font:500 15px/1 'Noto Sans SC',sans-serif;color:#FFF;letter-spacing:.04em;background:#6C5CE7;border:1px solid #6C5CE7;border-radius:999px;padding:16px 34px">联系我们</a>
+      <a href="#platform" class="btn-s" style="font:500 15px/1 'Noto Sans SC',sans-serif;color:#33334A;letter-spacing:.04em;background:#FFF;border:1px solid rgba(26,26,46,.18);border-radius:999px;padding:16px 34px">了解平台</a>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);color:#A4A4B4;animation:floatY 2.8s ease-in-out infinite">
+    <svg width="18" height="26" viewBox="0 0 18 26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 1v20M2 14l7 8 7-8"/></svg>
+  </div>
+</section>
+
+<!-- ===================== 1 · 核心能力 ===================== -->
+<section id="capabilities" style="scroll-margin-top:80px;position:relative;z-index:2;padding:170px 0">
+  <div class="pad" style="max-width:1200px;margin:0 auto;padding:0 48px">
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.22em;color:#6C5CE7;margin-bottom:26px">核心能力</div>
+    <h2 data-reveal style="margin:0;max-width:760px;font:600 clamp(40px,4.8vw,60px)/1.22 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">规则之外的世界，需要另一种方法</h2>
+    <p data-reveal style="margin:36px 0 0;max-width:740px;font:300 19px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.015em">AI 已攻克规则明确的领域——编程、数学、信息检索。但经济活动中更复杂的问题由人类行为主导，其规则隐性、依情境而变、不断演化。我们用三项能力去逼近它。</p>
+
+    <div class="grid3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:80px">
+      <div data-reveal class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:42px 36px 46px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <h3 style="margin:0 0 20px;font:500 23px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">高保真行为建模</h3>
+        <p style="margin:0;font:300 15.5px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">对人的行为与决策进行结构化建模。不是情绪打分，不是关键词匹配——还原行为背后的动机结构与决策模式。</p>
+      </div>
+      <div data-reveal class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:42px 36px 46px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <h3 style="margin:0 0 20px;font:500 23px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">因果推断</h3>
+        <p style="margin:0;font:300 15.5px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">区分"相关"与"因果"。在临床场景，这决定干预是否有效；在商业场景，这决定决策建议是否可靠。</p>
+      </div>
+      <div data-reveal class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:42px 36px 46px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <h3 style="margin:0 0 20px;font:500 23px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">可解释性</h3>
+        <p style="margin:0;font:300 15.5px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">输出必须可被人类理解、审查、修正。涉及人的高风险场景——医疗、金融、教育、政策——黑箱不可接受。</p>
+      </div>
+    </div>
+
+    <p data-reveal style="margin:60px 0 0;font:400 22px/1.6 'Noto Serif SC',serif;color:#6C5CE7;letter-spacing:.02em">不是功能清单，是方法论承诺。</p>
+  </div>
+</section>
+
+<!-- ===================== 2 · 平台 ===================== -->
+<section id="platform" style="scroll-margin-top:80px;position:relative;z-index:2;padding:170px 0;border-top:1px solid #E8E8EE">
+  <div class="pad" style="position:relative;max-width:1200px;margin:0 auto;padding:0 48px">
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.22em;color:#6C5CE7;margin-bottom:26px">平台</div>
+    <p data-reveal style="margin:0 0 20px;font:300 16px/1.7 'Noto Sans SC',sans-serif;color:#8888A0;letter-spacing:.02em">基于这三项核心能力，我们构建了一个可交付的平台。</p>
+    <h2 data-reveal style="margin:0;max-width:920px;font:600 clamp(40px,4.8vw,60px)/1.2 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">高保真人类行为模拟</h2>
+    <div data-reveal style="margin:18px 0 0;font:500 italic clamp(20px,2vw,26px)/1.2 'Cormorant Garamond',serif;color:#9090A4;letter-spacing:.01em">Human Simulation as a Service</div>
+    <p data-reveal style="margin:30px 0 0;max-width:760px;font:300 19px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.015em">为企业、政策制定者、社会组织与个人，提供高保真人类决策与行为的 AI 模拟。</p>
+
+    <div data-reveal class="twocol" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:84px;padding-top:52px;border-top:1px solid #E8E8EE">
+      <div>
+        <div style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.06em;color:#6C5CE7;margin-bottom:22px">它替代什么</div>
+        <p style="margin:0;font:300 16px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">传统市场研究依赖真人——贵、慢、难规模化。一次定量调研动辄数十万元、周期数周。高风险决策缺乏低成本预演。</p>
+      </div>
+      <div>
+        <div style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.06em;color:#6C5CE7;margin-bottom:22px">它怎么做</div>
+        <p style="margin:0;font:300 16px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">以高保真模拟用户替代或增强真人被试，完成消费者调研、概念测试、A/B 实验与政策预演。底层是结构化行为建模与因果推断——不是通用大模型做角色扮演。</p>
+      </div>
+    </div>
+
+    <div data-reveal style="margin-top:56px">
+      <span style="display:inline-flex;align-items:center;gap:11px;font:400 13px/1 'Noto Sans SC',sans-serif;color:#6C5CE7;letter-spacing:.03em;border:1px solid rgba(108,92,231,.38);border-radius:999px;padding:12px 22px;background:rgba(108,92,231,.05)"><span style="width:6px;height:6px;border-radius:50%;background:#6C5CE7"></span>已与亚太区头部保险公司合作，提供客户仿真技术与系统评估</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3 · 心理健康 ===================== -->
+<section id="mental" style="scroll-margin-top:80px;position:relative;z-index:2;padding:170px 0;border-top:1px solid #E8E8EE">
+  <div class="pad" style="max-width:1200px;margin:0 auto;padding:0 48px">
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.22em;color:#6C5CE7;margin-bottom:26px">第一个落地场景</div>
+    <h2 data-reveal style="margin:0;max-width:760px;font:600 clamp(40px,4.8vw,60px)/1.2 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">从心理健康开始</h2>
+    <p data-reveal style="margin:36px 0 0;max-width:820px;font:300 19px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.015em">这是我们选择的第一个验证场——行为建模能力要求最高、验证场景最严格、供需缺口最真实的领域。如果方法论能在这里跑通，它就能迁移到任何需要理解人类行为的场景。</p>
+    <p data-reveal style="margin:20px 0 0;max-width:820px;font:300 16px/1.9 'Noto Sans SC',sans-serif;color:#8888A0;letter-spacing:.015em">以循证内容与医疗级合规为基础，覆盖筛查分级、AI 辅助干预、临床督导三个环节。</p>
+
+    <div id="stats" data-reveal class="grid4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:36px;margin-top:78px;padding-top:54px;border-top:1px solid #E8E8EE">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px"><span class="ctr" data-t="9500" style="font:500 clamp(42px,4.6vw,60px)/1 'Cormorant Garamond',serif;color:#1A1A2E">9,500</span><span style="font:400 22px/1 'Noto Sans SC',sans-serif;color:#6C5CE7">万</span></div>
+        <div style="font:300 13.5px/1.6 'Noto Sans SC',sans-serif;color:#8888A0;margin-top:16px">心理问题人群</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px"><span class="ctr" data-t="5400" style="font:500 clamp(42px,4.6vw,60px)/1 'Cormorant Garamond',serif;color:#1A1A2E">5,400</span><span style="font:400 22px/1 'Noto Sans SC',sans-serif;color:#6C5CE7">万+</span></div>
+        <div style="font:300 13.5px/1.6 'Noto Sans SC',sans-serif;color:#8888A0;margin-top:16px">抑郁症患者</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px"><span class="ctr" data-t="6.4" data-dec="1" style="font:500 clamp(42px,4.6vw,60px)/1 'Cormorant Garamond',serif;color:#1A1A2E">6.4</span><span style="font:400 22px/1 'Noto Sans SC',sans-serif;color:#6C5CE7">万</span></div>
+        <div style="font:300 13.5px/1.6 'Noto Sans SC',sans-serif;color:#8888A0;margin-top:16px">精神科医生</div>
+      </div>
+      <div>
+        <div style="font:500 clamp(42px,4.6vw,60px)/1 'Cormorant Garamond',serif;color:#6C5CE7">&lt;10%</div>
+        <div style="font:300 13.5px/1.6 'Noto Sans SC',sans-serif;color:#8888A0;margin-top:16px">就诊率</div>
+      </div>
+    </div>
+
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.1em;color:#9090A4;margin-top:64px;margin-bottom:22px">已合作机构</div>
+    <div data-reveal style="display:flex;flex-wrap:wrap;gap:14px">
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">浙大一院</span>
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">湘雅二医院</span>
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">重庆大学附属肿瘤医院</span>
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">浙江省精神卫生中心</span>
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">西湖大学</span>
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">香港科技大学</span>
+      <span style="font:400 13px/1 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:11px 20px;background:#FFF">西湖心辰</span>
+    </div>
+
+    <div data-reveal style="margin-top:56px">
+      <a href="#" class="mlink" style="display:inline-flex;align-items:center;gap:10px;font:500 16px/1 'Noto Sans SC',sans-serif;color:#6C5CE7;letter-spacing:.04em;border-bottom:1px solid rgba(108,92,231,.45);padding-bottom:8px">了解扶光心舍 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 4 · 研究成果 ===================== -->
+<section id="research" style="scroll-margin-top:80px;position:relative;z-index:2;padding:170px 0;border-top:1px solid #E8E8EE">
+  <div class="pad" style="max-width:1200px;margin:0 auto;padding:0 48px">
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.22em;color:#6C5CE7;margin-bottom:26px">研究成果</div>
+    <h2 data-reveal style="margin:0;max-width:760px;font:600 clamp(40px,4.8vw,60px)/1.2 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">方法之下，是扎实的研究基底</h2>
+
+    <div data-reveal class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:70px">
+      <div class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:40px 36px 44px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <span style="display:inline-block;font:500 11px/1 'Inter',sans-serif;letter-spacing:.14em;color:#6C5CE7;border:1px solid rgba(108,92,231,.4);border-radius:999px;padding:7px 14px;margin-bottom:26px">方法体系</span>
+        <h3 style="margin:0 0 14px;font:500 22px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">高保真行为模拟与评测</h3>
+        <p style="margin:0;font:300 15.5px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80">高保真人类行为模拟与评测方法的体系化研究，是整个平台的技术底座。</p>
+      </div>
+      <div class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:40px 36px 44px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <span style="display:inline-block;font:500 11px/1 'Inter',sans-serif;letter-spacing:.14em;color:#6C5CE7;border:1px solid rgba(108,92,231,.4);border-radius:999px;padding:7px 14px;margin-bottom:26px">AI 顶会</span>
+        <h3 style="margin:0 0 14px;font:500 22px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">因果世界模型与推理</h3>
+        <p style="margin:0;font:300 15.5px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80">在 LLMs as causal world models、tool-using agents、LLM reasoning 等方向的顶会发表。</p>
+      </div>
+      <div class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:40px 36px 44px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <span style="display:inline-block;font:500 11px/1 'Inter',sans-serif;letter-spacing:.14em;color:#6C5CE7;border:1px solid rgba(108,92,231,.4);border-radius:999px;padding:7px 14px;margin-bottom:26px">经管顶刊</span>
+        <h3 style="margin:0 0 14px;font:500 22px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">消费者行为量化研究</h3>
+        <p style="margin:0;font:300 15.5px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80">在 Marketing Science、JMR、ISR 等经管社科顶刊长期积累的消费者行为建模与量化研究。</p>
+      </div>
+      <div class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:40px 36px 44px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+        <span style="display:inline-block;font:500 11px/1 'Inter',sans-serif;letter-spacing:.14em;color:#6C5CE7;border:1px solid rgba(108,92,231,.4);border-radius:999px;padding:7px 14px;margin-bottom:26px">交叉研究</span>
+        <h3 style="margin:0 0 14px;font:500 22px/1.4 'Noto Sans SC',sans-serif;color:#1A1A2E">AI × 精神医学</h3>
+        <p style="margin:0;font:300 15.5px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80">LLMs 与心理及精神医学交叉方向的算法研究。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5 · 技术路径（愿景位，以第二阶段领头）===================== -->
+<section id="tech" style="scroll-margin-top:80px;position:relative;z-index:2;padding:170px 0;border-top:1px solid #E8E8EE">
+  <div class="pad" style="max-width:1200px;margin:0 auto;padding:0 48px">
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.22em;color:#6C5CE7;margin-bottom:26px">技术路径</div>
+    <h2 data-reveal style="margin:0;max-width:820px;font:600 clamp(40px,4.8vw,60px)/1.2 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">从行为模拟，到 Agent 治理</h2>
+    <p data-reveal style="margin:36px 0 0;max-width:780px;font:300 19px/1.9 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.015em">今天的平台是这条路径的第一步。真正的目标在更远处——当 AI 越来越多地代替人决策，人类需要看懂并约束它。</p>
+
+    <div data-reveal class="roadflex" style="display:flex;align-items:stretch;gap:32px;margin-top:78px;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px;border:1px solid #E8E8EE;border-radius:16px;background:#FBFBFD;padding:44px 40px 48px">
+        <div style="display:inline-block;font:500 11px/1 'Inter',sans-serif;letter-spacing:.16em;color:#9090A4;border:1px solid #E0E0EA;border-radius:999px;padding:7px 14px;margin-bottom:28px">今天 · 第一阶段</div>
+        <h3 style="margin:0 0 18px;font:500 25px/1.42 'Noto Sans SC',sans-serif;color:#1A1A2E">AI 模仿与对齐人的行为</h3>
+        <p style="margin:0;font:300 16px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">即上面的高保真人类行为模拟平台——以用户模拟器为核心，构建跨场景模拟用户与配套评测体系。个体认知数字孪生、具身智能行为大脑。</p>
+      </div>
+      <div class="roadarrow" style="flex:none;display:flex;align-items:center;font:300 30px/1 'Inter',sans-serif;color:#6C5CE7">→</div>
+      <div style="flex:1;min-width:280px;border:1px solid rgba(108,92,231,.35);border-radius:16px;background:rgba(108,92,231,.04);padding:44px 40px 48px;box-shadow:0 10px 30px rgba(108,92,231,.06)">
+        <div style="display:inline-block;font:500 11px/1 'Inter',sans-serif;letter-spacing:.16em;color:#6C5CE7;border:1px solid rgba(108,92,231,.4);border-radius:999px;padding:7px 14px;margin-bottom:28px">明天 · 第二阶段</div>
+        <h3 style="margin:0 0 18px;font:500 25px/1.42 'Noto Sans SC',sans-serif;color:#1A1A2E">让人类理解并约束 AI</h3>
+        <p style="margin:0;font:300 16px/1.92 'Noto Sans SC',sans-serif;color:#6B6B80">当 AI 偏离人类的行为与决策模式时，帮助人类理解它、并施加约束与治理。面向 Agent Economy 的行为评测与可信度认证、更理性的决策辅助。</p>
+      </div>
+    </div>
+
+    <p data-reveal style="margin:48px 0 0;max-width:720px;font:400 20px/1.7 'Noto Serif SC',serif;color:#33334A;letter-spacing:.02em">两个阶段仍建立在同一套核心能力之上。产品与研究并重，致力成为 Agent 经济时代的标准制定者。</p>
+  </div>
+</section>
+
+<!-- ===================== 6 · 团队 ===================== -->
+<section id="team" style="scroll-margin-top:80px;position:relative;z-index:2;padding:170px 0;border-top:1px solid #E8E8EE">
+  <div class="pad" style="position:relative;max-width:1200px;margin:0 auto;padding:0 48px">
+    <div data-reveal style="font:500 12px/1 'Inter',sans-serif;letter-spacing:.22em;color:#6C5CE7;margin-bottom:26px">团队优势</div>
+    <h2 data-reveal style="margin:0;max-width:760px;font:600 clamp(40px,4.8vw,60px)/1.2 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">多种稀缺能力的高度融合</h2>
+    <p data-reveal style="margin:34px 0 0;max-width:820px;font:300 18px/1.86 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.015em">行为科学范式　·　下一代大模型架构认知　·　亿级规模工程落地　·　因果世界模型</p>
+
+    <div data-reveal style="margin-top:78px;font:500 12px/1 'Inter',sans-serif;letter-spacing:.16em;color:#9090A4">创始团队</div>
+    <div data-reveal class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px" id="founders"></div>
+
+    <div data-reveal style="margin-top:64px;font:500 12px/1 'Inter',sans-serif;letter-spacing:.16em;color:#9090A4">核心成员</div>
+    <div data-reveal class="grid4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:44px 40px;margin-top:36px" id="members"></div>
+
+    <div data-reveal style="margin-top:64px;font:500 12px/1 'Inter',sans-serif;letter-spacing:.16em;color:#9090A4">外部顾问</div>
+    <div data-reveal style="display:flex;flex-wrap:wrap;gap:16px;margin-top:28px">
+      <span style="font:400 13.5px/1.5 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:12px 22px;background:#FFF">YJZ　·　临床顾问　·　顶尖三甲医院精神卫生科主任</span>
+      <span style="font:400 13.5px/1.5 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em;border:1px solid #E4E4EC;border-radius:999px;padding:12px 22px;background:#FFF">CC　·　学术支持　·　港科大认知科学教授</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 联系 ===================== -->
+<section id="contact" style="scroll-margin-top:80px;position:relative;z-index:2;padding:200px 0;border-top:1px solid #E8E8EE;text-align:center;overflow:hidden">
+  <div class="pad" data-reveal style="position:relative;max-width:760px;margin:0 auto;padding:0 40px">
+    <h2 style="margin:0;font:600 clamp(34px,4.2vw,52px)/1.32 'Noto Serif SC',serif;color:#1A1A2E;letter-spacing:.01em">如果你关注行为科学与 AI 的交叉</h2>
+    <p style="margin:26px 0 0;font:300 18px/1.86 'Noto Sans SC',sans-serif;color:#6B6B80;letter-spacing:.02em">或在寻找临床、企业、研究领域的合作可能</p>
+    <a id="mail" href="#" class="mail" style="display:inline-block;margin-top:52px;font:400 22px/1 'Inter',sans-serif;color:#1A1A2E;letter-spacing:.04em;border:1px solid rgba(108,92,231,.45);border-radius:999px;padding:20px 40px;background:#FFF"></a>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer style="position:relative;z-index:2;border-top:1px solid #E8E8EE">
+  <div class="pad" style="max-width:1200px;margin:0 auto;padding:38px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px">
+    <div style="font:400 13px/1 'Inter',sans-serif;color:#8888A0;letter-spacing:.04em">© 2026 扶光心舍 / CORMIRA</div>
+    <div style="font:500 12px/1 'Inter',sans-serif;color:#6C5CE7;letter-spacing:.06em">AI 行为科学</div>
+  </div>
+</footer>
+
+<div id="toast" class="toast">英文版即将上线</div>
+
+<script>
+// ---------- team data ----------
+const founders=[
+  {ini:'JS',role:'发起人 · AI for Behavioral Science 研究负责人',bio:'CMU 量化市场学博士，ML 硕士；港科大终身教授，AI for Behavioral Science 实验室主任；Paul E. Green & Don Lehmann 最佳论文奖，2023 MSI Young Scholar。'},
+  {ini:'DL',role:'首席算法科学家',bio:'CMU 人工智能博士；某头部大厂通用 AI 研究中心主任；前 Google AI 科学家，NLP / CV 顶会 50+ 篇，引用逾 16,000 次。'},
+  {ini:'Mi',role:'工程算法',bio:'头部大厂 P10 工程算法技术专家，主导电商全场景算法；国内早期开展大模型预训练优化的核心成员之一。'},
+  {ini:'RG',role:'LLMs as Causal World Models 研究负责人',bio:'Arizona State University 计算机科学博士；前香港城市大学助理教授；前字节跳动 AI Lab。'}
+];
+const members=[
+  {ini:'HQ',role:'AI + Mental Health 算法与工程',bio:'港科大博后；浙大 × 西湖 AI 博士；前华为全栈工程师；多篇顶会一作。'},
+  {ini:'XC',role:'大模型后训练算法',bio:'港科大 AI × 行为科学博士；多篇顶会一作。'},
+  {ini:'An',role:'研究 + 运营',bio:'清华计算社会学博士；港科大信息系统管理硕士。'},
+  {ini:'YU',role:'产品',bio:'前大疆、携程资深产品经理；四川应用心理学硕士，300h+ 心理咨询培训，100h+ 咨询与服务经验。'}
+];
+function renderTeam(){
+  document.getElementById('founders').innerHTML=founders.map(m=>`
+    <div class="card" style="border:1px solid #E8E8EE;border-radius:16px;background:#FFF;padding:38px 36px 40px;box-shadow:0 1px 3px rgba(26,26,46,.04),0 10px 30px rgba(26,26,46,.03)">
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:24px">
+        <div style="flex:none;width:54px;height:54px;border-radius:50%;border:1px solid rgba(108,92,231,.4);background:rgba(108,92,231,.07);display:flex;align-items:center;justify-content:center;font:500 16px/1 'Inter',sans-serif;color:#6C5CE7">${m.ini}</div>
+        <div style="font:500 12.5px/1.5 'Inter',sans-serif;letter-spacing:.04em;color:#6C5CE7">${m.role}</div>
+      </div>
+      <p style="margin:0;font:300 14.5px/1.86 'Noto Sans SC',sans-serif;color:#5A5A6E">${m.bio}</p>
+    </div>`).join('');
+  document.getElementById('members').innerHTML=members.map(m=>`
+    <div>
+      <div style="width:48px;height:48px;border-radius:50%;border:1px solid rgba(108,92,231,.4);background:rgba(108,92,231,.07);display:flex;align-items:center;justify-content:center;font:500 14px/1 'Inter',sans-serif;color:#6C5CE7;margin-bottom:22px">${m.ini}</div>
+      <div style="font:500 11px/1.5 'Inter',sans-serif;letter-spacing:.04em;color:#6C5CE7;margin-bottom:12px">${m.role}</div>
+      <p style="margin:0;font:300 13.5px/1.8 'Noto Sans SC',sans-serif;color:#7A7A90">${m.bio}</p>
+    </div>`).join('');
+}
+renderTeam();
+
+// ---------- neural network field ----------
+(function(){
+  const cv=document.getElementById('neural');
+  if(!cv||!cv.getContext)return;
+  const ctx=cv.getContext('2d');
+  let w,h,dpr,nodes=[],edges=[],pulses=[],mouse={x:-9999,y:-9999};
+
+  function layout(){
+    dpr=Math.min(2,devicePixelRatio||1);
+    w=cv.clientWidth;h=cv.clientHeight;
+    cv.width=w*dpr;cv.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    nodes=[];edges=[];pulses=[];
+    // layered network across the width
+    const layers=[5,8,10,8,5];
+    const padX=w*0.08, usableW=w-padX*2;
+    const colCount=layers.length;
+    const cols=layers.map((cnt,ci)=>{
+      const x=padX+usableW*(ci/(colCount-1));
+      const arr=[];
+      for(let i=0;i<cnt;i++){
+        const gapY=h/(cnt+1);
+        const jitterX=(Math.random()-.5)*w*0.03;
+        const jitterY=(Math.random()-.5)*gapY*0.5;
+        arr.push({x:x+jitterX,y:gapY*(i+1)+jitterY,r:Math.random()*1.6+2.2,
+          ci, baseA:0.5+Math.random()*0.4, ph:Math.random()*Math.PI*2, sp:0.6+Math.random()*0.7});
+      }
+      return arr;
+    });
+    nodes=cols.flat();
+    // connect adjacent layers (sparse, each node to ~2-3 in next layer)
+    for(let ci=0;ci<cols.length-1;ci++){
+      cols[ci].forEach(a=>{
+        const next=cols[ci+1].slice().sort((p,q)=>Math.abs(p.y-a.y)-Math.abs(q.y-a.y));
+        const k=2+(Math.random()<.5?1:0);
+        next.slice(0,k).forEach(b=>edges.push({a,b,base:0.10+Math.random()*0.10}));
+      });
+    }
+    // seed a few travelling pulses
+    for(let i=0;i<7;i++)spawnPulse();
+  }
+  function spawnPulse(){
+    if(!edges.length)return;
+    const e=edges[(Math.random()*edges.length)|0];
+    pulses.push({e,t:Math.random()*0.3,sp:0.004+Math.random()*0.006});
+  }
+
+  function frame(){
+    ctx.clearRect(0,0,w,h);
+    const now=performance.now()/1000;
+    // edges
+    edges.forEach(e=>{
+      const md=Math.min(distToSeg(mouse.x,mouse.y,e.a,e.b),9999);
+      const near=Math.max(0,1-md/120);
+      const a=e.base+near*0.4;
+      ctx.strokeStyle='rgba(108,92,231,'+a.toFixed(3)+')';
+      ctx.lineWidth=0.7+near*1.1;
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);ctx.stroke();
+    });
+    // pulses
+    for(let i=pulses.length-1;i>=0;i--){
+      const p=pulses[i];p.t+=p.sp;
+      if(p.t>=1){pulses.splice(i,1);if(Math.random()<.9)spawnPulse();continue;}
+      const x=p.e.a.x+(p.e.b.x-p.e.a.x)*p.t, y=p.e.a.y+(p.e.b.y-p.e.a.y)*p.t;
+      const g=ctx.createRadialGradient(x,y,0,x,y,7);
+      g.addColorStop(0,'rgba(124,108,231,.9)');g.addColorStop(1,'rgba(124,108,231,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,7,0,6.283);ctx.fill();
+    }
+    // nodes
+    nodes.forEach(n=>{
+      const tw=0.6+0.4*Math.sin(now*n.sp+n.ph);
+      const dm=Math.hypot(mouse.x-n.x,mouse.y-n.y);
+      const near=Math.max(0,1-dm/130);
+      const a=Math.min(1,n.baseA*tw+near*0.5);
+      const r=n.r+near*2.2;
+      if(near>0.05){
+        const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,r*4);
+        g.addColorStop(0,'rgba(108,92,231,'+(0.32*near).toFixed(3)+')');g.addColorStop(1,'rgba(108,92,231,0)');
+        ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*4,0,6.283);ctx.fill();
+      }
+      ctx.fillStyle='rgba(108,92,231,'+a.toFixed(3)+')';
+      ctx.beginPath();ctx.arc(n.x,n.y,r,0,6.283);ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  function distToSeg(px,py,a,b){
+    const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;
+    if(!l2)return Math.hypot(px-a.x,py-a.y);
+    let t=((px-a.x)*dx+(py-a.y)*dy)/l2;t=Math.max(0,Math.min(1,t));
+    return Math.hypot(px-(a.x+t*dx),py-(a.y+t*dy));
+  }
+  addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+  addEventListener('mouseout',()=>{mouse.x=mouse.y=-9999;});
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(layout,250)});
+  layout();frame();
+})();
+
+// ---------- email (anti-scrape) ----------
+(function(){const u='hello',d='cormira.com',m=document.getElementById('mail');m.href='mailto:'+u+'@'+d;m.textContent=u+'@'+d;})();
+
+// ---------- language toggle ----------
+function setLang(l){
+  document.querySelectorAll('.langbtn').forEach(b=>b.classList.remove('lang-active'));
+  event.target.classList.add('lang-active');
+  if(l==='en'){
+    const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);
+  }
+}
+
+// ---------- fluid parallax ----------
+let mx=0,my=0,cx=0,cy=0,scroll=0;
+addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+addEventListener('scroll',()=>{scroll=scrollY||0},{passive:true});
+const fluid=document.getElementById('fluid');
+(function tick(){cx+=(mx-cx)*.03;cy+=(my-cy)*.03;if(fluid)fluid.style.transform=`translate(${cx*-14}px,${cy*-14-scroll*.04}px)`;requestAnimationFrame(tick)})();
+
+// ---------- scroll reveal ----------
+if('IntersectionObserver' in window){
+  const els=[...document.querySelectorAll('[data-reveal]')];
+  els.forEach(el=>{el.style.opacity='0';el.style.transform='translateY(30px)';el.style.transition='opacity 1s cubic-bezier(.2,.6,.2,1),transform 1s cubic-bezier(.2,.6,.2,1)'});
+  const ro=new IntersectionObserver(ents=>{ents.forEach(e=>{if(e.isIntersecting){const sibs=[...e.target.parentElement.querySelectorAll(':scope>[data-reveal]')];const i=Math.max(0,sibs.indexOf(e.target));e.target.style.transitionDelay=(i*.08)+'s';e.target.style.opacity='1';e.target.style.transform='none';ro.unobserve(e.target)}})},{threshold:.12});
+  els.forEach(el=>ro.observe(el));
+}
+
+// ---------- counters ----------
+function animCount(el,target,dec){const t0=performance.now(),dur=1700;const step=n=>{let p=Math.min(1,(n-t0)/dur);p=1-Math.pow(1-p,3);el.textContent=dec?(target*p).toFixed(dec):Math.round(target*p).toLocaleString();if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+if('IntersectionObserver' in window){
+  let done=false;
+  const so=new IntersectionObserver(ents=>{ents.forEach(e=>{if(e.isIntersecting&&!done){done=true;document.querySelectorAll('.ctr').forEach(c=>animCount(c,parseFloat(c.dataset.t),parseInt(c.dataset.dec||'0')));so.disconnect();}})},{threshold:.4});
+  const st=document.getElementById('stats');if(st)so.observe(st);
+}
+</script>
+</body>
+</html>
